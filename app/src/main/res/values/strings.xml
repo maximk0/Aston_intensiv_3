@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ContsctsRV</string>
+    <string name="id">%s</string>
+    <string name="ic_edit_description">Button: edit</string>
 </resources>
