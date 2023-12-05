@@ -2,15 +2,20 @@ package com.example.contsctsrv
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.contsctsrv.databinding.ItemContactBinding
 
 class ContactsAdapter(
     var contacts: List<Contact>,
-    private val onClickEditBtn: (position: Int) -> Unit,
-    private val onClickCheckbox: (position: Int) -> Unit
+    private val onClickContact: (position: Int) -> Unit
 ) : RecyclerView.Adapter<ContactsViewHolder>() {
+
+    private val deletedContact = mutableListOf<Contact>()
+    var showCheckbox = false
+        private set
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactsViewHolder {
         return ContactsViewHolder(
             ItemContactBinding.inflate(
@@ -26,20 +31,36 @@ class ContactsAdapter(
 
         with(holder.binding) {
 
+            checkbox.isVisible = showCheckbox
+
+            checkbox.isChecked = deletedContact.contains(contact)
+
             id.text = holder.itemView.context.getString(R.string.id, contact.id)
             firstName.text = contact.firstName
             lastName.text = contact.lastName
             number.text = contact.number
 
-            btnEdit.setOnClickListener {
-                onClickEditBtn(position)
+            checkbox.setOnClickListener {
+                deletedContact.add(contact)
+                if (checkbox.isChecked)
+                    deletedContact.add(contact)
             }
 
-            checkbox.setOnClickListener {
-                if (checkbox.isChecked)
-                    onClickCheckbox(position)
+            root.setOnClickListener {
+                onClickContact(position)
             }
         }
+    }
+
+    fun setShowCheckbox(isShow: Boolean) {
+        showCheckbox = isShow
+        this.notifyDataSetChanged()
+    }
+
+    fun deletedContactList(): List<Contact> {
+        val newList = contacts.minus(deletedContact)
+        deletedContact.clear()
+        return newList
     }
 
 }
